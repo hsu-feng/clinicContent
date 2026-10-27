@@ -9,6 +9,7 @@ import {
   type SectionKey,
 } from "@/lib/clinics";
 import EducationPanel from "./EducationPanel";
+import { Spinner } from "./ui";
 import ServicesPanel from "./ServicesPanel";
 
 type Props = {
@@ -89,7 +90,16 @@ export default function ContentPanel(props: Props) {
                 disabled={busy}
                 className={primary}
               >
-                {generatingSection === activeTab ? "生成中…" : current ? "重新生成" : "生成內容"}
+                {generatingSection === activeTab ? (
+                  <span className="flex items-center gap-2">
+                    <Spinner size="h-3.5 w-3.5" tone="border-white/40 border-t-white" />
+                    生成中…
+                  </span>
+                ) : current ? (
+                  "重新生成"
+                ) : (
+                  "生成內容"
+                )}
               </button>
               <button onClick={props.onEdit} disabled={!hasContent || busy} className={secondary}>
                 編輯
@@ -127,7 +137,10 @@ export default function ContentPanel(props: Props) {
         )}
 
         {generatingSection === activeTab ? (
-          <p className="text-zinc-500">AI 正在搜尋並生成「{activeLabel}」，約需 5–20 秒…</p>
+          <div className="flex items-center gap-3 text-zinc-500">
+            <Spinner size="h-5 w-5" />
+            <p>AI 正在搜尋並讀取網站，生成「{activeLabel}」中…（約需 10–60 秒）</p>
+          </div>
         ) : (
           <>
             {isServices ? (

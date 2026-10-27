@@ -8,6 +8,61 @@
 
 ---
 
+## 項目清單
+
+後端總共要實作 **11 支 API**。每一項都標了對應的前端函式，可以直接對照 `src/lib/` 的串接層。
+
+### 讀取
+
+| 項目 | 端點 | 前端函式 |
+|---|---|---|
+| 診所列表 | `GET /api/clinics` | `fetchClinics`（clinics.ts） |
+| 讀取四個區塊內容 | `GET /api/clinics/{clinicId}/content` | `fetchContent`（clinics.ts） |
+| AI 設定 | `GET /api/ai-settings` | `loadAiSettings`（ai-settings.ts，目前讀 localStorage） |
+
+### 寫入
+
+| 項目 | 端點 | 前端函式 |
+|---|---|---|
+| 登入 | `POST /api/auth/login` | `login`（api.ts） |
+| 登出 | `POST /api/auth/logout` | `logout`（api.ts） |
+| 儲存內容 | `PUT /api/clinics/{clinicId}/content` | `saveContent`（clinics.ts） |
+| 傳送（發布） | `POST /api/clinics/{clinicId}/content/publish` | `publishContent`（clinics.ts） |
+| 刪除內容 | `DELETE /api/clinics/{clinicId}/content` | `deleteContent`（clinics.ts） |
+| 儲存 AI 設定 | `PUT /api/ai-settings` | `saveAiSettings`（ai-settings.ts，目前寫 localStorage） |
+| 圖片上傳 | `POST /api/images` | `uploadImage`（clinics.ts） |
+| 圖片刪除 | `DELETE /api/images/{imageId}` | 尚未使用 |
+
+三項容易被漏掉、但缺了會出問題的：
+
+- **儲存內容**：編輯模式右上角的「儲存」。「傳送」發布的是**伺服器上已儲存的版本**，
+  所以沒有儲存，整條編輯流程是斷的。
+- **圖片上傳**：目前圖片都是 base64 data URL，只活在瀏覽器記憶體，重整就消失；
+  而 LINE Flex 訊息要求圖片**必須是 HTTPS 網址**且長度 ≤2000 字元，data URL 一定過不了。
+  這是上線的必要條件，不是優化。
+- **圖片刪除**：建議一開始就做。iCare 專案的圖片類別只有上傳沒有刪除，
+  結果部分流程失敗時會留下沒人引用、也無法清除的孤兒圖片。
+
+### 不納入的範圍
+
+**診所的新增、修改、刪除不在本專案**，由另一套系統維護，這裡只消費 `GET /api/clinics`。
+（特別寫出來，是為了避免之後看到「診所只有讀取沒有寫入」時誤以為是漏列。）
+
+### 待決議
+
+`POST /api/generate` 與 `POST /api/generate-image` 目前是**前端專案自己的 Next.js route handler**
+（見「六、已經實作的內部 API」），歸屬尚未決定。
+
+這件事和「儲存 AI 設定」有相依關係：**一旦金鑰改由後端保管，這兩支就取不到金鑰**，
+屆時必須二選一——
+
+1. 整支搬到後端實作，或
+2. 由後端提供取得金鑰的方式（或代理轉發）。
+
+在決定之前，AI 金鑰會持續以明文存在瀏覽器 `localStorage`。
+
+---
+
 ## 共通約定
 
 | 項目 | 約定 |

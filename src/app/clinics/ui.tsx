@@ -44,3 +44,21 @@ export function CountHint({ value, min, max }: { value: string; min: number; max
     </span>
   );
 }
+
+// 生成中的轉圈。顏色與大小用參數傳，不要靠 className 疊加覆寫——
+// Tailwind 同優先權的類別是由樣式表順序決定，寫在後面不保證會贏
+export function Spinner({
+  size = "h-4 w-4",
+  tone = "border-zinc-300 border-t-blue-600",
+}: {
+  size?: string;
+  tone?: string;
+}) {
+  return (
+    <span
+      role="status"
+      aria-label="處理中"
+      className={`inline-block shrink-0 animate-spin rounded-full border-2 ${size} ${tone}`}
+    />
+  );
+}
